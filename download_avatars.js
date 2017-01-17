@@ -49,4 +49,8 @@ function avatarsUrl(err, result){
 			});
 }
 
-getRepoContributors(owner, name, avatarsUrl);
+if (!owner || !name) {
+	console.log('Please insert repoOwner and repoName while run again.')
+} else {
+	getRepoContributors(owner, name, avatarsUrl);
+}
