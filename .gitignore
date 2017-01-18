@@ -47,4 +47,5 @@ jspm_packages
 .yarn-integrity
 
 # Project img folder
+.env
 /avatars
