@@ -5,13 +5,17 @@ var GITHUB_USER = process.env.GITHUB_USER;
 var GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 var owner = process.argv[2];
 var name = process.argv[3];
-console.log(process.env.GITHUB_USER);
-console.log(process.env.GITHUB_TOKEN);
 console.log('Welcome to the GitHub Avatar Downloader!');
 
 function getRepoContributors(repoOwner, repoName, cb) {
+	if ( !fs.existsSync('./.env') ) {
+		fs.mkdirSync('./.env');
+	}
+	if ( !GITHUB_USER || !GITHUB_TOKEN ) {
+		console.log('Github User and Token info is missing in .env file.');
+		process.exit(1);
+	}
   var requestURL = 'https://' + GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
-  console.log("ha ha ha", requestURL);
   var requestOptions = {
   	url: requestURL,
   	headers: {
@@ -47,6 +51,9 @@ function avatarsUrl(err, result){
 	var parseData = JSON.parse(result.body);
 	if (parseData.message !== undefined) {
 		console.log("OH NO, GITHUB IS ANGRY!!!  They said: ", parseData.message);
+		if ( parseData.message === 'Bad credentials') {
+			console.log('Check .env for correct User and Token.')
+		}
 		if (parseData.documentation_url) {
 			console.log("Github suggested this documentation:", parseData.documentation_url);
 		}
@@ -64,11 +71,8 @@ function avatarsUrl(err, result){
 	});
 }
 
-if (!owner && !name) {
+if ( !owner || !name || !isNaN(owner) || !isNaN(name) ) {
 	console.log('Please insert repoOwner and repoName while run again.')
 } else {
-	if (!owner) {
-		console.log('Please insert ')
-	}
 	getRepoContributors(owner, name, avatarsUrl);
 }
